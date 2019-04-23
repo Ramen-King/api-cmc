@@ -1,8 +1,16 @@
 window.onload = init;
 
+let history = [];
+
 function init() {
   const submitRequest = document.querySelector(".card-area");
   submitRequest.addEventListener("click", request);
+
+  const prevBtn = document.querySelector("#prev");
+  prevBtn.addEventListener("click", previous);
+
+  const nxtBtn = document.querySelector("#nxt");
+  nxtBtn.addEventListener("click", next);
 }
 function request(event) {
   event.preventDefault();
@@ -23,43 +31,56 @@ function handleData(event) {
   console.log(cards);
 
   //get a random card
+
   const cardNumber = Math.floor(Math.random() * 100);
-  console.log(deck);
   const cardSelected = cards[cardNumber];
 
+  history.push(cardNumber);
+
   const cardSelectedImg = cardSelected.imageUrl;
-  //   newCard(cardSelected);
   document.querySelector(".card-area").src = cardSelectedImg;
-  console.log(cardSelected);
 
   listStats(cardSelected);
 }
 
 function listStats(cardSelected) {
- 
-  const statsWanted = [cardSelected.name, cardSelected.type, cardSelected.rarity];
-  const ul = document.querySelector('.stats');
-  for (let i = 0; i < statsWanted.length; i++){
-    const li = document.createElement('li');
-      li.innerText = statsWanted[i];
-      ul.appendChild(li);
-  }
-  while (request) {
-    ul.removeChild()
+  const ul = document.querySelector(".stats");
+  const statsWanted = {
+    "Name:": cardSelected.name,
+    "Type:": cardSelected.type,
+    "Rarity:": cardSelected.rarity
+  };
+  const pairs = Object.entries(statsWanted);
+  clearUl();
+
+  for (let i = 0; i < pairs.length; i++) {
+    const li = document.createElement("li");
+    li.classList.add("list-style");
+    li.innerText = `${pairs[i][0]} ${pairs[i][1]}`;
+    ul.appendChild(li);
   }
 
-  
-  
-    // statNodes.innerText = cardSelected.statsWanted[i];
-    // ul.appendChild(statNodes);
-    // 
-    // statNodes.innerText = cardSelected.colorIdentity;
-    // ul.appendChild(statNodes);
-    // 
-    // statNodes.innerText = cardSelected.types;
-    // ul.appendChild(statNodes);
-    // 
-    // statNodes.innerText = cardSelected.rarity;
-    // ul.appendChild(statNodes);
+  function clearUl() {
+    const ul = document.querySelector("ul");
 
+    while (ul.hasChildNodes()) {
+      ul.firstChild.remove();
+    }
+  }
 }
+
+function next(event, currentCard) {
+  event.preventDefault();
+  //find current cardNumber index
+  const nextIndex = history.indexOf(currentCard) + 1;
+  currentCard = history[nextIndex];
+  sendRequest()
+}
+
+function previous(event, currentCard) {
+  event.preventDefault();
+  const previousIndex = history.indexOf(currentCard) - 1;
+  currentCard = history[previousIndex];
+  sendRequest()
+} 
+
