@@ -36,6 +36,8 @@ function handleData(event) {
   const cardSelected = cards[cardNumber];
 
   history.push(cardNumber);
+  console.log(history)
+  console.log(cardNumber)
 
   const cardSelectedImg = cardSelected.imageUrl;
   document.querySelector(".card-area").src = cardSelectedImg;
@@ -56,6 +58,7 @@ function listStats(cardSelected) {
   for (let i = 0; i < pairs.length; i++) {
     const li = document.createElement("li");
     li.classList.add("list-style");
+    typeWriter(li);
     li.innerText = `${pairs[i][0]} ${pairs[i][1]}`;
     ul.appendChild(li);
   }
@@ -74,13 +77,25 @@ function next(event, currentCard) {
   //find current cardNumber index
   const nextIndex = history.indexOf(currentCard) + 1;
   currentCard = history[nextIndex];
-  sendRequest()
+  sendRequest();
+  console.log(history)
 }
 
 function previous(event, currentCard) {
   event.preventDefault();
   const previousIndex = history.indexOf(currentCard) - 1;
   currentCard = history[previousIndex];
-  sendRequest()
-} 
+  sendRequest();
+  console.log(history)
+  
+}
 
+function typeWriter(text) {
+  const speed = 50;
+  let i = 0;
+  if (i < text.length) {
+    document.querySelector("li").innerText += txt.charAt(i);
+    i++;
+    setTimeout(typeWriter, speed);
+  }
+}
