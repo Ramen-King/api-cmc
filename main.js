@@ -1,50 +1,75 @@
 window.onload = init;
 
-let history = [];
+// [card13, card23, card87]
+
+const history = [];
 
 function init() {
   const submitRequest = document.querySelector(".card-area");
-  submitRequest.addEventListener("click", request);
+  submitRequest.addEventListener("click", initialRequest, addToHistory);
 
   const prevBtn = document.querySelector("#prev");
-  prevBtn.addEventListener("click", previous);
+  prevBtn.addEventListener("click", previous, previousRequest);
 
   const nxtBtn = document.querySelector("#nxt");
-  nxtBtn.addEventListener("click", next);
-}
-function request(event) {
-  event.preventDefault();
-
-  sendRequest();
+  nxtBtn.addEventListener("click", next, nextRequest);
 }
 
-function sendRequest() {
+
+function initialRequest() {
+//   document
+    // .querySelector(".card-area")
+    // .removeEventListener("click", request, addToHistory);
+//   setTimeout(function() {
+    // document
+    //   .querySelector(".card-area")
+    //   .addEventListener("click", request, addToHistory);
+//   }, 4000);
   const xhr = new XMLHttpRequest();
   const url = `https://api.magicthegathering.io/v1/cards/`;
   xhr.open("GET", url);
-  xhr.onload = handleData;
+  xhr.onload = random;
   xhr.send();
 }
-function handleData(event) {
+function previousRequest() {
+  event.prevenDefault();
+  const xhr = new XMLHttpRequest();
+  const url = `https://api.magicthegathering.io/v1/cards/`;
+  xhr.open("GET", url);
+  xhr.onload = prev;
+  xhr.send();
+}
+function nextRequest() {
+  event.preventDefault();
+  const xhr = new XMLHttpRequest();
+  const url = `https://api.magicthegathering.io/v1/cards/`;
+  xhr.open("GET", url);
+  xhr.onload = next;
+  xhr.send();
+}
+// function parser() {
+//   const deck = JSON.parse(event.target.responseText);
+//   const { cards } = deck;
+// }
+function random(event) {
   const deck = JSON.parse(event.target.responseText);
   const { cards } = deck;
-  console.log(cards);
-
-  //get a random card
-
   const cardNumber = Math.floor(Math.random() * 100);
   const cardSelected = cards[cardNumber];
-
-  history.push(cardNumber);
-  console.log(history)
-  console.log(cardNumber)
-
+  console.log(deck);
   const cardSelectedImg = cardSelected.imageUrl;
   document.querySelector(".card-area").src = cardSelectedImg;
-
   listStats(cardSelected);
+  addToHistory(cardNumber);
+  console.log(history);
 }
 
+//add the card to history for cycle functions
+function addToHistory(value) {
+  return history.push(value);
+}
+
+//displays value of selected keys
 function listStats(cardSelected) {
   const ul = document.querySelector(".stats");
   const statsWanted = {
@@ -58,11 +83,11 @@ function listStats(cardSelected) {
   for (let i = 0; i < pairs.length; i++) {
     const li = document.createElement("li");
     li.classList.add("list-style");
-    typeWriter(li);
     li.innerText = `${pairs[i][0]} ${pairs[i][1]}`;
     ul.appendChild(li);
   }
 
+  //clear the ul of its children
   function clearUl() {
     const ul = document.querySelector("ul");
 
@@ -71,31 +96,33 @@ function listStats(cardSelected) {
     }
   }
 }
+//cycles forward to the next card
+function next(event) {
+  const deck = JSON.parse(event.target.responseText);
+  const { cards } = deck;
+  const cardNumber = Math.floor(Math.random() * 100);
+  const cardSelected = cards[cardNumber];
+  console.log(deck);
 
-function next(event, currentCard) {
-  event.preventDefault();
+  const cardSelectedImg = cardSelected.imageUrl;
+  document.querySelector(".card-area").src = cardSelectedImg;
+
+  listStats(cardSelected);
+  console.log(history);
   //find current cardNumber index
-  const nextIndex = history.indexOf(currentCard) + 1;
-  currentCard = history[nextIndex];
-  sendRequest();
-  console.log(history)
 }
+//cycles backwards to the previous card
+function previous   (event) {
+  const deck = JSON.parse(event.target.responseText);
+  const { cards } = deck;
 
-function previous(event, currentCard) {
-  event.preventDefault();
-  const previousIndex = history.indexOf(currentCard) - 1;
-  currentCard = history[previousIndex];
-  sendRequest();
-  console.log(history)
-  
-}
+  const cardNumber = Math.floor(Math.random() * 100);
+  const cardSelected = cards[cardNumber];
+  console.log(deck);
 
-function typeWriter(text) {
-  const speed = 50;
-  let i = 0;
-  if (i < text.length) {
-    document.querySelector("li").innerText += txt.charAt(i);
-    i++;
-    setTimeout(typeWriter, speed);
-  }
+  const cardSelectedImg = cardSelected.imageUrl;
+  document.querySelector(".card-area").src = cardSelectedImg;
+
+  listStats(cardSelected);
+  console.log(history);
 }
